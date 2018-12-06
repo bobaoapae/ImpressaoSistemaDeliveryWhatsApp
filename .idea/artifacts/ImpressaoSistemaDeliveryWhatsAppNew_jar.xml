@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="ImpressaoSistemaDeliveryWhatsAppNew:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ImpressaoSistemaDeliveryWhatsAppNew_jar</output-path>
+    <root id="archive" name="ImpressaoSistemaDeliveryWhatsAppNew.jar">
+      <element id="module-output" name="ImpressaoSistemaDeliveryWhatsAppNew" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../jxbrowser/6.22/jxbrowser-win64-6.22.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../jxbrowser/6.22/jxbrowser-win32-6.22.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../jxbrowser/6.22/jxbrowser-6.22.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../jxbrowser/licenseCrack.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../EscPos-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

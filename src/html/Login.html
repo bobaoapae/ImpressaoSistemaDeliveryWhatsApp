@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Login</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: rgb(245, 245, 245);
+        }
+
+        hr {
+            border-color: grey;
+        }
+
+        #pedidos ul li {
+            border-left: 1px solid #4CAE4C;
+        }
+        
+        #pedidos input, #reservas input {
+            margin-bottom: 10px;
+        }
+        
+        #pedidos ul li, #reservas ul li {
+             margin-bottom: 10px;
+            transition: 0.3s;
+        }
+
+        #pedidos ul li:hover, #reservas ul li:hover {
+            transition: 0.3s;
+            box-shadow: 5px 5px 10px grey;
+        }
+
+        #pedidos ul #valor {
+            color: #4CAE4C;
+            font-size: 20px;
+        }
+        
+        #reservas ul li {
+            border-left: 1px solid  #428bca;
+        }
+        
+        #reservas ul .badge {
+            margin-right: 5px;
+            background-color: #428bca;
+        }
+        
+        #swal2-content {
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <!--
+    Tela de login
+    Escolher o estabelecimento(só nome e logo)
+    Lista de pedidos ativos com botão pra imprimir novamente
+-->
+    <div class="container-fluid">
+        <div id="login">
+            <h3>Login</h3>
+
+            <form id="form-login">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label for="usuario">Usuario: </label>
+                            <input type="text" id="usuario" class="form-control" autofocus>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label for="senha">Senha: </label>
+                            <input type="password" id="senha" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-login" class="btn btn-success btn-block">Entrar</button>
+                <button type="button" id="btn-deslogar" class="btn btn-danger btn-block" style="display: none" onclick="deslogar();">Sair
+                </button>
+            </form>
+        </div>
+
+        <div id="impressora">
+            <h3>Impressão</h3>
+
+            <form id="form-iniciar">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label for="estabelecimentos">Estabelecimento: </label>
+
+                            <select name="estabelecimentos" id="estabelecimentos" class="form-control" disabled>
+                                <option value="0">Estabelecimento 0</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label for="impressoras">Impressora: </label>
+
+                            <select name="impressoras" id="impressoras" class="form-control" disabled>
+                                <option value="0">Impressora 0</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-iniciar" class="btn btn-primary btn-block" disabled>Iniciar</button>
+                <button type="button" id="btn-trocarEstabelecimento" class="btn btn-danger btn-block" style="display: none" onclick="trocarEstabelecimento();">Encerrar Impressão
+                </button>
+            </form>
+        </div>
+
+        <hr>
+
+        <!-- NAV -->
+        <ul class="nav nav-pills nav-justified" id="myTabs">
+            <li class="active">
+                <a href="#pedidos">PEDIDOS</a>
+            </li>
+
+            <li>
+                <a href="#reservas">RESERVAS</a>
+            </li>
+        </ul>
+        <!-- FIM NAV -->
+
+        <!-- TAB-CONTENT -->
+        <div class="tab-content">
+            <!-- PEDIDOS -->
+            <div id="pedidos" class="tab-pane active">
+                <h3>Pedidos</h3>
+
+                <input type="search" id="pesquisa-pedido" class="form-control" placeholder="Digite aqui para pesquisar..." disabled>
+
+                <ul class="list-group">
+                    <li class="list-group-item clearfix">
+                        <label>Pedido #002</label>
+                        |
+                        <label>Retirada: 20h30</label>
+                        |
+                        <label>William Martins Coelho</label> <br>
+
+                        <button class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Concluir Pedido">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+
+                        <button class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimir Pedido">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </button>
+
+                        <button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Cancelar Pedido">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+
+                        <label class="pull-right" id="valor">R$ 30,00</label>
+                    </li>
+
+                    <li class="list-group-item clearfix">
+                        <label>Pedido #003</label>
+                        |
+                        <label>Entrega</label>
+                        |
+                        <label>Nome Sobrenome</label> <br>
+
+                        <button class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Saiu para Entrega">
+                            <span class="glyphicon glyphicon-share-alt"></span>
+                        </button>
+
+                        <button class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimir Pedido">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </button>
+
+                        <button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Cancelar Pedido">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+
+                        <label class="pull-right" id="valor">R$ 50,00</label>
+                    </li>
+                </ul>
+            </div>
+            <!-- FIM PEDIDOS -->
+
+            <!-- RESERVAS -->
+            <div id="reservas" class="tab-pane" role="tabpanel">
+                <h3>Reservas</h3>
+
+                <input type="search" id="pesquisa-reserva" class="form-control" placeholder="Digite aqui para pesquisar..." disabled>
+
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <label>#001</label>
+                        |
+                        <label>Nome da pessoa que fez reserva</label>
+
+                        <br>
+
+                        <div class="clearfix">
+                            <label class="badge pull-left label-primary">(44) 9 9924-0444</label>
+                            <label class="badge pull-left">24/11/2018</label>
+                            <label class="badge pull-left">19:00</label>
+                            <label class="badge pull-left">10 pessoas</label>
+                        </div>
+
+                        <p>Comentario de uma reserva</p>
+
+                        <button class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimir Reserva">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </button>
+
+                        <button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Cancelar Reserva">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </li>
+                    
+                    <li class="list-group-item">
+                        <label>#002</label>
+                        |
+                        <label>Nome da pessoa que fez reserva</label>
+
+                        <br>
+
+                        <div class="clearfix">
+                            <label class="badge pull-left label-primary">(44) 9 9924-0444</label>
+                            <label class="badge pull-left">24/11/2018</label>
+                            <label class="badge pull-left">19:00</label>
+                            <label class="badge pull-left">10 pessoas</label>
+                        </div>
+
+                        <p>Comentario de uma reserva</p>
+
+                        <button class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimir Reserva">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </button>
+
+                        <button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Cancelar Reserva">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <!-- FIM RESERVAS -->
+        </div>
+        <!-- FIM TAB-CONTENT -->
+
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/sweetalert2.all.min.js"></script>
+    <script src="js/jquery.loading.block.js"></script>
+
+    <script>
+        $('#myTabs a').click(function(e) {
+            e.preventDefault()
+            $(this).tab('show')
+        })
+
+        function addPedido(pedidoString, replacing) {
+            let pedido = JSON.parse(pedidoString);
+
+            let horaAgendamento = ``;
+
+            if (pedido.horaAgendamento) {
+                horaAgendamento = `: ${pedido.horaAgendamento}`;
+            }
+
+            let entrega_ou_retirada = 'Retirada';
+
+            let botaoAcao = `<button class="btn btn-success" data-toggle="tooltip" onclick="java.atual.concluirPedido('${pedido.uuid}');" data-placement="top" title="Concluir Pedido">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>`;
+
+            if (pedido.entrega) {
+                entrega_ou_retirada = 'Entrega';
+                botaoAcao = `<button class="btn btn-warning" data-toggle="tooltip" onclick="java.atual.sairEntregaPedido('${pedido.uuid}');" data-placement="top" title="Saiu para Entrega">
+                    <span class="glyphicon glyphicon-share-alt"></span>
+                </button>`;
+            }
+
+            let codigo = `<li class="list-group-item clearfix" data-pedido-id="${pedido.uuid}">
+                <label>Pedido #${pedido.cod}</label>
+                |
+                <label>${entrega_ou_retirada}${horaAgendamento}</label>
+                |
+                <label>${pedido.cliente.nome}</label> <br>
+
+                ${botaoAcao}
+
+                <button class="btn btn-default" data-toggle="tooltip" onclick="java.atual.imprimirPedido('${pedido.uuid}');" data-placement="top" title="Imprimir Pedido">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+
+                <button class="btn btn-danger" data-toggle="tooltip" onclick="java.atual.cancelarPedido('${pedido.uuid}');" data-placement="top" title="Cancelar Pedido">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </button>
+
+                <label class="pull-right">R$ ${pedido.total.toFixed(2)}</label>
+            </li>`;
+            if (replacing !== undefined) {
+                $('[data-pedido-id="' + pedido.uuid + '"]').replaceWith(codigo);
+            } else {
+                $("#pedidos").append(codigo);
+            }
+        }
+
+
+        function mostrarSpinner() {
+            $.loadingBlockShow({
+                imgPath: 'img/spinner.svg',
+                imgStyle: {
+                    width: 'auto',
+                    textAlign: 'center',
+                    marginTop: '20%',
+                },
+                text: 'Carregando...',
+                style: {
+                    position: 'fixed',
+                    width: '100%',
+                    height: '100%',
+                    background: 'rgba(0, 0, 0, .8)',
+                    left: 0,
+                    top: 0,
+                    zIndex: 10000,
+                    color: 'white'
+                }
+            });
+        }
+
+        function sAlert(titulo, texto, tipo) {
+            swal(
+                titulo,
+                texto,
+                tipo
+            )
+        }
+
+        function runOnJavaStart() {
+            window.setTimeout(() => {
+                if (window.java !== undefined) {
+                    $("#form-login").submit();
+                } else {
+                    runOnJavaStart();
+                }
+            }, 1000);
+        }
+
+        $(function() {
+            /*Ativar Tooltip*/
+            $('[data-toggle="tooltip"]').tooltip();
+
+            if (localStorage.getItem("login") !== undefined && localStorage.getItem("senha") != undefined) {
+                $("#usuario").val(localStorage.getItem("login"));
+                $("#senha").val(localStorage.getItem("senha"));
+                runOnJavaStart();
+            }
+        })
+        $("#form-login").submit(function(event) {
+            event.preventDefault();
+            $("#usuario").prop("disabled", true);
+            $("#senha").prop("disabled", true);
+            $("#btn-login").prop("disabled", true);
+            mostrarSpinner();
+            java.atual.realizarLogin(this.usuario.value, this.senha.value, (resultado) => {
+                $.loadingBlockHide();
+                if (resultado !== true) {
+                    $("#usuario").prop("disabled", false);
+                    $("#senha").prop("disabled", false);
+                    $("#btn-login").prop("disabled", false);
+                    //msg erro
+                    sAlert(
+                        "Ops!",
+                        "Parece que ocorreu um erro ao fazer o login!",
+                        "error"
+                    );
+                } else {
+                    localStorage.setItem("login", this.usuario.value);
+                    localStorage.setItem("senha", this.senha.value);
+                    $("#estabelecimentos").prop("disabled", false);
+                    $("#impressoras").prop("disabled", false);
+                    $("#btn-iniciar").prop("disabled", false);
+                    $("#btn-login").slideUp();
+                    $("#btn-deslogar").slideDown();
+                    if (localStorage.getItem("estabelecimento") !== undefined && localStorage.getItem("impressora") != undefined) {
+                        $("#estabelecimentos").val(localStorage.getItem("estabelecimento"));
+                        $("#impressoras").val(localStorage.getItem("impressora"));
+                        $("#form-iniciar").submit();
+                    }
+                }
+            });
+        });
+        $("#form-iniciar").submit(function(event) {
+            event.preventDefault();
+            mostrarSpinner();
+            $("#estabelecimentos").prop("disabled", true);
+            $("#impressoras").prop("disabled", true);
+            $("#btn-iniciar").prop("disabled", true);
+            java.atual.iniciarMonitoramento(this.estabelecimentos.value, this.impressoras.value, (resultado) => {
+                $.loadingBlockHide();
+                if (resultado !== true) {
+                    $("#estabelecimentos").prop("disabled", false);
+                    $("#impressoras").prop("disabled", false);
+                    $("#btn-iniciar").prop("disabled", false);
+                    //msg erro login
+                    sAlert(
+                        "Ops!",
+                        "Parece que ocorreu um erro ao fazer o login!",
+                        "error"
+                    );
+                } else {
+                    localStorage.setItem("estabelecimento", this.estabelecimentos.value);
+                    localStorage.setItem("impressora", this.impressoras.value);
+                    $("#pesquisa-pedido").prop("disabled", false);
+                    $("#btn-iniciar").slideUp();
+                    $("#btn-trocarEstabelecimento").slideDown();
+                }
+                $("#btn-iniciar").slideUp();
+                $("#btn-trocarEstabelecimento").slideDown()
+            });
+        });
+
+        function trocarEstabelecimento() {
+            java.atual.trocarEstabelecimento();
+            $("#btn-iniciar").prop("disabled", false);
+            $("#estabelecimentos").prop("disabled", false);
+            $("#impressoras").prop("disabled", false);
+            $("#btn-iniciar").slideDown();
+            $("#btn-trocarEstabelecimento").slideUp();
+            localStorage.removeItem("estabelecimento");
+            localStorage.removeItem("impressora");
+        }
+
+        function deslogar() {
+            java.atual.deslogar();
+            $("#btn-login").slideDown();
+            $("#btn-deslogar").slideUp();
+            $("#usuario").prop("disabled", false);
+            $("#senha").prop("disabled", false);
+            $("#btn-login").prop("disabled", false);
+            $("#estabelecimentos").prop("disabled", true);
+            $("#impressoras").prop("disabled", true);
+            $("#btn-iniciar").prop("disabled", true);
+            $("#btn-iniciar").slideDown();
+            $("#btn-trocarEstabelecimento").slideUp();
+            localStorage.removeItem("estabelecimento");
+            localStorage.removeItem("impressora");
+            localStorage.removeItem("login");
+            localStorage.removeItem("senha");
+        }
+
+    </script>
+</body>
+
+</html>
