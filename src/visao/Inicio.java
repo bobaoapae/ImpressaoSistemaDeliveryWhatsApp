@@ -80,6 +80,11 @@ public class Inicio extends JFrame {
         function.invoke(null, Utilitarios.getDefaultGsonBuilder(null).create().toJson(p));
     }
 
+    public void addReserva(Reserva r) {
+        JSFunction function = browser.executeJavaScriptAndReturnValue("window.addReserva").asFunction();
+        function.invoke(null, Utilitarios.getDefaultGsonBuilder(null).create().toJson(r));
+    }
+
     public void atualizarPedido(Pedido p) {
         JSFunction function = browser.executeJavaScriptAndReturnValue("window.addPedido").asFunction();
         function.invoke(null, Utilitarios.getDefaultGsonBuilder(null).create().toJson(p), p.getUuid().toString());
@@ -162,18 +167,38 @@ public class Inicio extends JFrame {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao marcar o pedido #" + pedido.getCod() + " como cancelado, o suporte foi notificado!", "error");
         } else {
-            atualizarLista();
+           DOMElement div = browser.getDocument().findElement(By.cssSelector("[data-pedido-id='"+uuid+"']"));
+           div.setAttribute("style","visible:none");
+        }
+    }
+
+    public void cancelarReserva(String uuid) {
+        Reserva reserva = new Reserva();
+        reserva.setUuid(UUID.fromString(uuid));
+        if (!eventosImpressao.cancelarReserva(reserva)) {
+            JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
+            function.invoke(null, "Ops!", "Ocorreu um erro ao cancelar a reserva #" + reserva.getCod() + ", o suporte foi notificado!", "error");
+        } else {
+            DOMElement div = browser.getDocument().findElement(By.cssSelector("[data-reserva-id='"+uuid+"']"));
+            div.setAttribute("style","visible:none");
         }
     }
 
     public void atualizarLista() {
         try {
-            DOMElement pedidos = browser.getDocument().findElement(By.id("pedidos"));
+            DOMElement pedidos = browser.getDocument().findElement(By.id("pedidosList"));
             for (DOMNode node : pedidos.getChildren()) {
                 pedidos.removeChild(node);
             }
             for (Pedido pedido : eventosImpressao.pedidosAtivos()) {
                 addPedido(pedido);
+            }
+            DOMElement reservas = browser.getDocument().findElement(By.id("reservasList"));
+            for (DOMNode node : pedidos.getChildren()) {
+                reservas.removeChild(node);
+            }
+            for (Reserva reserva : eventosImpressao.reservasAtivas()) {
+                addReserva(reserva);
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -252,7 +277,7 @@ public class Inicio extends JFrame {
                         break;
                     }
                 }
-                ControleImpressao.getInstance().imprimir(new File("logo.png"));
+                //ControleImpressao.getInstance().imprimir(new File("logo.png"));
                 Inicio.this.eventosImpressao = new EventosImpressao(token, (Pedido pedido) -> {
                     try {
                         trayImpressao.displayMenssage("Novo Pedido #" + pedido.getCod());
@@ -285,7 +310,7 @@ public class Inicio extends JFrame {
                             }
                         }
                         for (Reserva reserva : eventosImpressao.reservasImprimir()) {
-                            //addPedido(pedido);
+                            addReserva(reserva);
                             if (!reserva.isImpresso()) {
                                 imprimirReserva(reserva);
                             }
@@ -313,9 +338,13 @@ public class Inicio extends JFrame {
                 browser.loadURL(this.getClass().getClassLoader().getResource("html/Login.html").toString());
             }
         });
-        DOMElement pedidos = browser.getDocument().findElement(By.id("pedidos"));
+        DOMElement pedidos = browser.getDocument().findElement(By.id("pedidosList"));
         for (DOMNode node : pedidos.getChildren()) {
             pedidos.removeChild(node);
+        }
+        DOMElement reservas = browser.getDocument().findElement(By.id("reservasList"));
+        for (DOMNode node : reservas.getChildren()) {
+            reservas.removeChild(node);
         }
         browser.executeJavaScript("window.java = {};");
         JSValue window = browser.executeJavaScriptAndReturnValue("window.java");

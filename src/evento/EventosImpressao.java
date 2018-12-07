@@ -58,12 +58,28 @@ public class EventosImpressao implements EventHandler {
         return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/pedidoCancelado?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
     }
 
+    public boolean cancelarReserva(Reserva pedido) {
+        return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/excluirReserva?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
+    }
+
     public boolean concluirPedido(Pedido pedido) {
         return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/pedidoConcluido?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
     }
 
     public boolean sairEntregaPedido(Pedido pedido) {
         return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/pedidoSaiuEntrega?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
+    }
+
+    public List<Reserva> reservasAtivas() throws Throwable {
+        String json = Utilitarios.getText("http://zapia.com.br:8080/api/reservas?token=" + token);
+        if (!json.isEmpty()) {
+            Reserva[] pedidos = builder.fromJson(json, Reserva[].class);
+            return Arrays.asList(pedidos);
+        } else {
+            Throwable throwable = new Throwable("Falha ao baixar as reservas da api ");
+            this.actionOnError.run(throwable);
+            throw throwable;
+        }
     }
 
     public List<Reserva> reservasImprimir() throws Throwable {
