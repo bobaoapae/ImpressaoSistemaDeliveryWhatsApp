@@ -7,8 +7,14 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/../jxbrowser/6.22/jxbrowser-win32-6.22.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../jxbrowser/6.22/jxbrowser-6.22.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../jxbrowser/licenseCrack.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../EscPos-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/launchdarkly/okhttp-eventsource/1.8.0/okhttp-eventsource-1.8.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/3.8.1/okhttp-3.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/squareup/okio/okio/1.13.0/okio-1.13.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.22/slf4j-api-1.7.22.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-collections4/4.2/commons-collections4-4.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../EscPos-1.2.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -278,7 +278,7 @@ Lista de pedidos ativos com botão pra imprimir novamente
     function addReserva(reservaString) {
         let reserva = JSON.parse(reservaString);
 
-        let codigo = `<li class="list-group-item"  data-reserva-id="${reserva.uuid}">
+        let codigo = `<li class="list-group-item" data-reserva-id="${reserva.uuid}">
                         <label>#${reserva.cod}</label>
                         |
                         <label>${reserva.nomeContato}</label>
@@ -288,7 +288,6 @@ Lista de pedidos ativos com botão pra imprimir novamente
                         <div class="clearfix">
                             <label class="badge pull-left label-primary">${reserva.telefoneContato}</label>
                             <label class="badge pull-left">${reserva.dataReserva}</label>
-                            <label class="badge pull-left">19:00</label>
                             <label class="badge pull-left">${reserva.qtdPessoas}</label>
                         </div>
 
@@ -458,6 +457,8 @@ Lista de pedidos ativos com botão pra imprimir novamente
                     "Parece que ocorreu um erro ao fazer o login!",
                     "error"
                 );
+                $("#btn-iniciar").slideDown();
+                $("#btn-trocarEstabelecimento").slideUp()
             } else {
                 localStorage.setItem("estabelecimento", this.estabelecimentos.value);
                 localStorage.setItem("impressora", this.impressoras.value);
@@ -465,8 +466,6 @@ Lista de pedidos ativos com botão pra imprimir novamente
                 $("#btn-iniciar").slideUp();
                 $("#btn-trocarEstabelecimento").slideDown();
             }
-            $("#btn-iniciar").slideUp();
-            $("#btn-trocarEstabelecimento").slideDown()
         });
     });
 

@@ -1,6 +1,5 @@
 package visao;
 
-import com.google.gson.JsonObject;
 import com.teamdev.jxbrowser.chromium.*;
 import com.teamdev.jxbrowser.chromium.dom.By;
 import com.teamdev.jxbrowser.chromium.dom.DOMElement;
@@ -22,7 +21,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -167,8 +165,7 @@ public class Inicio extends JFrame {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao marcar o pedido #" + pedido.getCod() + " como cancelado, o suporte foi notificado!", "error");
         } else {
-           DOMElement div = browser.getDocument().findElement(By.cssSelector("[data-pedido-id='"+uuid+"']"));
-           div.setAttribute("style","visible:none");
+            atualizarLista();
         }
     }
 
@@ -179,23 +176,15 @@ public class Inicio extends JFrame {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao cancelar a reserva #" + reserva.getCod() + ", o suporte foi notificado!", "error");
         } else {
-            DOMElement div = browser.getDocument().findElement(By.cssSelector("[data-reserva-id='"+uuid+"']"));
-            div.setAttribute("style","visible:none");
+            atualizarLista();
         }
     }
 
     public void atualizarLista() {
         try {
-            DOMElement pedidos = browser.getDocument().findElement(By.id("pedidosList"));
-            for (DOMNode node : pedidos.getChildren()) {
-                pedidos.removeChild(node);
-            }
+            limparListas();
             for (Pedido pedido : eventosImpressao.pedidosAtivos()) {
                 addPedido(pedido);
-            }
-            DOMElement reservas = browser.getDocument().findElement(By.id("reservasList"));
-            for (DOMNode node : pedidos.getChildren()) {
-                reservas.removeChild(node);
             }
             for (Reserva reserva : eventosImpressao.reservasAtivas()) {
                 addReserva(reserva);
@@ -289,7 +278,7 @@ public class Inicio extends JFrame {
                 }, (Reserva reserva) -> {
                     trayImpressao.displayMenssage("Nova Reserva #" + reserva.getCod());
                     try {
-                        //addPedido(pedido);
+                        addReserva(reserva);
                         imprimirReserva(reserva);
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -302,6 +291,7 @@ public class Inicio extends JFrame {
                         }
                     }.start();
                 }, () -> {
+                    limparListas();
                     try {
                         for (Pedido pedido : eventosImpressao.pedidosAtivos()) {
                             addPedido(pedido);
@@ -309,7 +299,7 @@ public class Inicio extends JFrame {
                                 imprimirPedido(pedido);
                             }
                         }
-                        for (Reserva reserva : eventosImpressao.reservasImprimir()) {
+                        for (Reserva reserva : eventosImpressao.reservasAtivas()) {
                             addReserva(reserva);
                             if (!reserva.isImpresso()) {
                                 imprimirReserva(reserva);
@@ -319,9 +309,7 @@ public class Inicio extends JFrame {
                         throwable.printStackTrace();
                     }
                 }, null, null, () -> {
-                    eventosImpressao = null;
-                    JSFunction function = browser.executeJavaScriptAndReturnValue("deslogar").asFunction();
-                    function.invoke(null);
+                    trayImpressao.displayMenssage("A conexão falhou, fazendo login novamente!");
                 });
                 jsFunction.invoke(jsFunction.asObject(), true);
             } catch (Exception ex) {
@@ -331,13 +319,7 @@ public class Inicio extends JFrame {
         }).start();
     }
 
-    public void abrir() {
-        Browser.invokeAndWaitFinishLoadingMainFrame(browser, new Callback<Browser>() {
-            @Override
-            public void invoke(Browser arg0) {
-                browser.loadURL(this.getClass().getClassLoader().getResource("html/Login.html").toString());
-            }
-        });
+    private void limparListas() {
         DOMElement pedidos = browser.getDocument().findElement(By.id("pedidosList"));
         for (DOMNode node : pedidos.getChildren()) {
             pedidos.removeChild(node);
@@ -346,6 +328,16 @@ public class Inicio extends JFrame {
         for (DOMNode node : reservas.getChildren()) {
             reservas.removeChild(node);
         }
+    }
+
+    public void abrir() {
+        Browser.invokeAndWaitFinishLoadingMainFrame(browser, new Callback<Browser>() {
+            @Override
+            public void invoke(Browser arg0) {
+                browser.loadURL(this.getClass().getClassLoader().getResource("html/Login.html").toString());
+            }
+        });
+        limparListas();
         browser.executeJavaScript("window.java = {};");
         JSValue window = browser.executeJavaScriptAndReturnValue("window.java");
         window.asObject().setProperty("atual", this);

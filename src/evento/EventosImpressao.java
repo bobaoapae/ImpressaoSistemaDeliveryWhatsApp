@@ -24,6 +24,7 @@ public class EventosImpressao implements EventHandler {
     private EventSource source;
     private boolean aleardyOpen = false;
     private ActionOnAjuda actionOnAjuda;
+    private String endPoint = "http://zapia.com.br:8080";
 
     public EventosImpressao(String token, ActionOnNovoPedido actionOnNovoPedido, ActionOnNovaReserva actionOnNovaReserva, ActionOnAjuda actionOnAjuda, Runnable open, Runnable disconnect, ActionOnError actionOnError, Runnable onLogout) {
         this.actionOnNovoPedido = actionOnNovoPedido;
@@ -35,7 +36,7 @@ public class EventosImpressao implements EventHandler {
         this.disconnect = disconnect;
         this.onLogout = onLogout;
         builder = Utilitarios.getDefaultGsonBuilder(null).create();
-        EventSource.Builder builder = new EventSource.Builder(this, URI.create("http://zapia.com.br:8080/api/eventos?token=" + token));
+        EventSource.Builder builder = new EventSource.Builder(this, URI.create("" + endPoint + "/api/eventos?token=" + token));
         EventSource eventSource = builder.build();
         eventSource.setReconnectionTimeMs(300);
         eventSource.start();
@@ -47,31 +48,31 @@ public class EventosImpressao implements EventHandler {
     }
 
     public boolean notificarPedidoImpresso(Pedido pedido) {
-        return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/pedidoImpresso?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
+        return Utilitarios.getResponseCode("" + endPoint + "/api/pedidoImpresso?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
     }
 
     public boolean notificarReservaImpressa(Reserva reserva) {
-        return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/reservaImpressa?uuid=" + reserva.getUuid() + "&token=" + token) == 201;
+        return Utilitarios.getResponseCode("" + endPoint + "/api/reservaImpressa?uuid=" + reserva.getUuid() + "&token=" + token) == 201;
     }
 
     public boolean cancelarPedido(Pedido pedido) {
-        return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/pedidoCancelado?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
+        return Utilitarios.getResponseCode("" + endPoint + "/api/pedidoCancelado?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
     }
 
     public boolean cancelarReserva(Reserva pedido) {
-        return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/excluirReserva?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
+        return Utilitarios.getResponseCode("" + endPoint + "/api/excluirReserva?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
     }
 
     public boolean concluirPedido(Pedido pedido) {
-        return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/pedidoConcluido?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
+        return Utilitarios.getResponseCode("" + endPoint + "/api/pedidoConcluido?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
     }
 
     public boolean sairEntregaPedido(Pedido pedido) {
-        return Utilitarios.getResponseCode("http://zapia.com.br:8080/api/pedidoSaiuEntrega?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
+        return Utilitarios.getResponseCode("" + endPoint + "/api/pedidoSaiuEntrega?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
     }
 
     public List<Reserva> reservasAtivas() throws Throwable {
-        String json = Utilitarios.getText("http://zapia.com.br:8080/api/reservas?token=" + token);
+        String json = Utilitarios.getText("" + endPoint + "/api/reservas?token=" + token);
         if (!json.isEmpty()) {
             Reserva[] pedidos = builder.fromJson(json, Reserva[].class);
             return Arrays.asList(pedidos);
@@ -83,7 +84,7 @@ public class EventosImpressao implements EventHandler {
     }
 
     public List<Reserva> reservasImprimir() throws Throwable {
-        String json = Utilitarios.getText("http://zapia.com.br:8080/api/reservasImprimir?token=" + token);
+        String json = Utilitarios.getText("" + endPoint + "/api/reservasImprimir?token=" + token);
         if (!json.isEmpty()) {
             Reserva[] pedidos = builder.fromJson(json, Reserva[].class);
             return Arrays.asList(pedidos);
@@ -95,7 +96,7 @@ public class EventosImpressao implements EventHandler {
     }
 
     public Reserva reserva(UUID uuid) throws Throwable {
-        String json = Utilitarios.getText("http://zapia.com.br:8080/api/reservas?token=" + token + "&uuid=" + uuid.toString());
+        String json = Utilitarios.getText("" + endPoint + "/api/reservas?token=" + token + "&uuid=" + uuid.toString());
         if (!json.isEmpty()) {
             Reserva reserva = builder.fromJson(json, Reserva.class);
             return reserva;
@@ -107,7 +108,7 @@ public class EventosImpressao implements EventHandler {
     }
 
     public List<Pedido> pedidosImprimir() throws Throwable {
-        String json = Utilitarios.getText("http://zapia.com.br:8080/api/pedidosImprimir?token=" + token);
+        String json = Utilitarios.getText("" + endPoint + "/api/pedidosImprimir?token=" + token);
         if (!json.isEmpty()) {
             Pedido[] pedidos = builder.fromJson(json, Pedido[].class);
             return Arrays.asList(pedidos);
@@ -119,7 +120,7 @@ public class EventosImpressao implements EventHandler {
     }
 
     public Pedido pedido(UUID uuid) throws Throwable {
-        String json = Utilitarios.getText("http://zapia.com.br:8080/api/pedido?token=" + token + "&uuid=" + uuid.toString());
+        String json = Utilitarios.getText("" + endPoint + "/api/pedido?token=" + token + "&uuid=" + uuid.toString());
         if (!json.isEmpty()) {
             Pedido pedido = builder.fromJson(json, Pedido.class);
             return pedido;
@@ -131,7 +132,7 @@ public class EventosImpressao implements EventHandler {
     }
 
     public List<Pedido> pedidosAtivos() throws Throwable {
-        String json = Utilitarios.getText("http://zapia.com.br:8080/api/pedidosAtivos?token=" + token);
+        String json = Utilitarios.getText("" + endPoint + "/api/pedidosAtivos?token=" + token);
         if (!json.isEmpty()) {
             Pedido[] pedidos = builder.fromJson(json, Pedido[].class);
             return Arrays.asList(pedidos);
@@ -161,7 +162,7 @@ public class EventosImpressao implements EventHandler {
     public void onMessage(String s, MessageEvent messageEvent) throws Exception {
         if (s.equals("novo-pedido")) {
             if (actionOnNovoPedido != null) {
-                String json = Utilitarios.getText("http://zapia.com.br:8080/api/pedido?uuid=" + messageEvent.getData() + "&token=" + this.token);
+                String json = Utilitarios.getText("" + endPoint + "/api/pedido?uuid=" + messageEvent.getData() + "&token=" + this.token);
                 if (!json.isEmpty()) {
                     Pedido pedido = builder.fromJson(json, Pedido.class);
                     actionOnNovoPedido.run(pedido);
@@ -173,7 +174,7 @@ public class EventosImpressao implements EventHandler {
             }
         } else if (s.equals("nova-reserva")) {
             if (actionOnNovaReserva != null) {
-                String json = Utilitarios.getText("http://zapia.com.br:8080/api/reservas?uuid=" + messageEvent.getData() + "&token=" + this.token);
+                String json = Utilitarios.getText("" + endPoint + "/api/reservas?uuid=" + messageEvent.getData() + "&token=" + this.token);
                 if (!json.isEmpty()) {
                     Reserva reserva = builder.fromJson(json, Reserva.class);
                     actionOnNovaReserva.run(reserva);
