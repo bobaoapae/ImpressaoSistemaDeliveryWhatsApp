@@ -30,6 +30,7 @@ public class Pedido {
     private Cliente cliente;
     private transient Estabelecimento estabelecimento;
     private Endereco endereco;
+    private TipoEntrega tipoEntrega;
 
     public Pedido(Cliente cliente, Estabelecimento estabelecimento) {
         produtos = Collections.synchronizedList(new ArrayList<>());
@@ -43,6 +44,14 @@ public class Pedido {
     }
 
     public Pedido() {
+    }
+
+    public TipoEntrega getTipoEntrega() {
+        return tipoEntrega;
+    }
+
+    public void setTipoEntrega(TipoEntrega tipoEntrega) {
+        this.tipoEntrega = tipoEntrega;
     }
 
     public long getCod() {

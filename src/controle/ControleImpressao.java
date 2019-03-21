@@ -158,7 +158,7 @@ public class ControleImpressao {
                 if (p.isEntrega()) {
                     builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.EMPHASIZED);
                     builderImpressaoGeral.align(Align.CENTER);
-                    builderImpressaoGeral.text("***Endereço para Entrega***\r\n");
+                    builderImpressaoGeral.text("***Endereço para " + p.getTipoEntrega() == null ? "Entrega" : p.getTipoEntrega().getNome() + "***\r\n");
                     builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.REGULAR);
                     builderImpressaoGeral.text((getStringWithSpacer("", "", 48, "-")));
                     builderImpressaoGeral.text(p.getEndereco().toString());
@@ -166,7 +166,7 @@ public class ControleImpressao {
                     builderImpressaoGeral.text((getStringWithSpacer("", "", 48, "-")));
                     builderImpressaoGeral.text("\r\n");
                 } else {
-                    builderImpressaoGeral.text("Retirar no Local");
+                    builderImpressaoGeral.text(p.getTipoEntrega() == null ? "Retirar no Local" : p.getTipoEntrega().getNome());
                 }
                 builderImpressaoGeral.text("\r\n");
                 builderImpressaoGeral.text((getStringWithSpacer("", "", 48, "-")));
