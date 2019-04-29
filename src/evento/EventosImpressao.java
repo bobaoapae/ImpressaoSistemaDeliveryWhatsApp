@@ -43,6 +43,23 @@ public class EventosImpressao implements EventHandler {
         this.source = eventSource;
     }
 
+    public void setToken(String token) {
+        if (!this.token.equals(token)) {
+            if (source != null) {
+                try {
+                    source.close();
+                } catch (Exception e) {
+
+                }
+            }
+            EventSource.Builder builder = new EventSource.Builder(this, URI.create("" + endPoint + "/api/eventos?token=" + token));
+            EventSource eventSource = builder.build();
+            eventSource.setReconnectionTimeMs(300);
+            eventSource.start();
+            this.source = eventSource;
+        }
+    }
+
     public EventSource getSource() {
         return source;
     }
@@ -63,12 +80,12 @@ public class EventosImpressao implements EventHandler {
         return Utilitarios.getResponseCode("" + endPoint + "/api/excluirReserva?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
     }
 
-    public boolean concluirPedido(Pedido pedido) {
-        return Utilitarios.getResponseCode("" + endPoint + "/api/pedidoConcluido?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
+    public boolean concluirPedido(Pedido pedido, boolean aviso) {
+        return Utilitarios.getResponseCode("" + endPoint + "/api/pedidoConcluido?uuid=" + pedido.getUuid() + "&notificar=" + aviso + "&token=" + token) == 201;
     }
 
-    public boolean sairEntregaPedido(Pedido pedido) {
-        return Utilitarios.getResponseCode("" + endPoint + "/api/pedidoSaiuEntrega?uuid=" + pedido.getUuid() + "&token=" + token) == 201;
+    public boolean sairEntregaPedido(Pedido pedido, boolean aviso) {
+        return Utilitarios.getResponseCode("" + endPoint + "/api/pedidoSaiuEntrega?uuid=" + pedido.getUuid() + "&notificar=" + aviso + "&token=" + token) == 201;
     }
 
     public List<Reserva> reservasAtivas() throws Throwable {
@@ -180,7 +197,7 @@ public class EventosImpressao implements EventHandler {
                     actionOnNovaReserva.run(reserva);
                 } else {
                     if (this.actionOnError != null) {
-                        this.actionOnError.run(new Throwable("Falha ao paixar reserva da api"));
+                        this.actionOnError.run(new Throwable("Falha ao baixar reserva da api"));
                     }
                 }
             }

@@ -202,7 +202,7 @@ Lista de pedidos ativos com botão pra imprimir novamente
             <h3>Reservas</h3>
 
             <input type="search" id="pesquisa-reserva" class="form-control" placeholder="Digite aqui para pesquisar..."
-                   >
+            >
 
             <ul id="reservasList" class="list-group">
                 <li class="list-group-item">
@@ -315,15 +315,16 @@ Lista de pedidos ativos com botão pra imprimir novamente
             horaAgendamento = `: ${pedido.horaAgendamento}`;
         }
 
-        let entrega_ou_retirada = 'Retirada';
+        let entrega_ou_retirada = pedido.entrega ? 'Entrega' : 'Retirada';
 
-        let botaoAcao = `<button class="btn btn-success" data-toggle="tooltip" onclick="java.atual.concluirPedido('${pedido.uuid}');" data-placement="top" title="Concluir Pedido">
+        let botaoAcao = '';
+
+        if (!pedido.entrega || pedido.estadoPedido == 'SaiuEntrega') {
+            botaoAcao = `<button class="btn btn-success" data-toggle="tooltip" onclick="concluirPedido('${pedido.uuid}',${pedido.entrega});" data-placement="top" title="Concluir Pedido">
                     <span class="glyphicon glyphicon-ok"></span>
                 </button>`;
-
-        if (pedido.entrega) {
-            entrega_ou_retirada = 'Entrega';
-            botaoAcao = `<button class="btn btn-warning" data-toggle="tooltip" onclick="java.atual.sairEntregaPedido('${pedido.uuid}');" data-placement="top" title="Saiu para Entrega">
+        } else {
+            botaoAcao = `<button class="btn btn-warning" data-toggle="tooltip" onclick="sairEntregaPedido('${pedido.uuid}');" data-placement="top" title="Saiu para Entrega">
                     <span class="glyphicon glyphicon-share-alt"></span>
                 </button>`;
         }
@@ -354,6 +355,38 @@ Lista de pedidos ativos com botão pra imprimir novamente
         }
     }
 
+
+    function concluirPedido(uuid, isEntrega) {
+        if (!isEntrega) {
+            swal({
+                title: '<h1>Deseja notificar o cliente?</h1>',
+                text: "Você não poderá reverter isso!",
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim!',
+                cancelButtonText: 'Não'
+            }).then((result) => {
+                java.atual.concluirPedido(uuid, result.value === true);
+            });
+        } else {
+            java.atual.concluirPedido(uuid, false);
+        }
+    }
+
+    function sairEntregaPedido(uuid) {
+        swal({
+            title: '<h1>Deseja notificar o cliente?</h1>',
+            text: "Você não poderá reverter isso!",
+            type: 'warning',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim!',
+            cancelButtonText: 'Não'
+        }).then((result) => {
+            java.atual.sairEntregaPedido(uuid, result.value === true);
+        });
+    }
 
     function mostrarSpinner() {
         $.loadingBlockShow({
@@ -404,7 +437,7 @@ Lista de pedidos ativos com botão pra imprimir novamente
             $("#senha").val(localStorage.getItem("senha"));
             runOnJavaStart();
         }
-    })
+    });
     $("#form-login").submit(function (event) {
         event.preventDefault();
         $("#usuario").prop("disabled", true);

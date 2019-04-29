@@ -23,6 +23,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +35,7 @@ public class Inicio extends JFrame {
     private Usuario usuario;
     private EventosImpressao eventosImpressao;
     private TrayImpressao trayImpressao;
+    private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
     public Inicio() {
         try {
@@ -66,6 +70,7 @@ public class Inicio extends JFrame {
         if (eventosImpressao != null) {
             eventosImpressao.getSource().close();
         }
+        executorService.shutdown();
         this.usuario = null;
         if (trayImpressao != null) {
             trayImpressao.remover();
@@ -136,10 +141,10 @@ public class Inicio extends JFrame {
         imprimirPedido(pedido);
     }
 
-    public void concluirPedido(String uuid) {
+    public void concluirPedido(String uuid, boolean aviso) {
         Pedido pedido = new Pedido();
         pedido.setUuid(UUID.fromString(uuid));
-        if (!eventosImpressao.concluirPedido(pedido)) {
+        if (!eventosImpressao.concluirPedido(pedido, aviso)) {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao marcar o pedido #" + pedido.getCod() + " como concluido, o suporte foi notificado!", "error");
         } else {
@@ -147,10 +152,10 @@ public class Inicio extends JFrame {
         }
     }
 
-    public void sairEntregaPedido(String uuid) {
+    public void sairEntregaPedido(String uuid, boolean aviso) {
         Pedido pedido = new Pedido();
         pedido.setUuid(UUID.fromString(uuid));
-        if (!eventosImpressao.sairEntregaPedido(pedido)) {
+        if (!eventosImpressao.sairEntregaPedido(pedido, aviso)) {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao marcar o pedido #" + pedido.getCod() + " como saindo para entrega, o suporte foi notificado!", "error");
         } else {
@@ -311,6 +316,15 @@ public class Inicio extends JFrame {
                 }, null, null, () -> {
                     trayImpressao.displayMenssage("A conexão falhou, fazendo login novamente!");
                 });
+                executorService.scheduleWithFixedDelay(() -> {
+                    String tokeen = ControleLogin.getInstance().getToken(usuario.getUsuario(), usuario.getSenha(), UUID.fromString(uuid));
+                    if (tokeen.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Falha ao renovar os dados de acesso, inicie o sistema novamente.");
+                        System.exit(0);
+                    } else {
+                        eventosImpressao.setToken(tokeen);
+                    }
+                }, 6, 6, TimeUnit.DAYS);
                 jsFunction.invoke(jsFunction.asObject(), true);
             } catch (Exception ex) {
                 ex.printStackTrace();
