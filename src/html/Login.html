@@ -349,7 +349,13 @@ Lista de pedidos ativos com botão pra imprimir novamente
                 <label class="pull-right">R$ ${pedido.total.toFixed(2)}</label>
             </li>`;
         if (replacing !== undefined) {
-            $('[data-pedido-id="' + pedido.uuid + '"]').replaceWith(codigo);
+            if ($('[data-pedido-id="' + pedido.uuid + '"]') !== undefined) {
+                if (pedido.estadoPedido !== 'Cancelado' && pedido.estadoPedido !== 'Concluido') {
+                    $('[data-pedido-id="' + pedido.uuid + '"]').replaceWith(codigo);
+                } else {
+                    $('[data-pedido-id="' + pedido.uuid + '"]').remove();
+                }
+            }
         } else {
             $("#pedidosList").append(codigo);
         }

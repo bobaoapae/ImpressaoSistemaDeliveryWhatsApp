@@ -78,6 +78,11 @@ public class Inicio extends JFrame {
         }
     }
 
+    public void updatePedido(Pedido p) {
+        JSFunction function = browser.executeJavaScriptAndReturnValue("window.addPedido").asFunction();
+        function.invoke(null, Utilitarios.getDefaultGsonBuilder(null).create().toJson(p), true);
+    }
+
     public void addPedido(Pedido p) {
         JSFunction function = browser.executeJavaScriptAndReturnValue("window.addPedido").asFunction();
         function.invoke(null, Utilitarios.getDefaultGsonBuilder(null).create().toJson(p));
@@ -86,11 +91,6 @@ public class Inicio extends JFrame {
     public void addReserva(Reserva r) {
         JSFunction function = browser.executeJavaScriptAndReturnValue("window.addReserva").asFunction();
         function.invoke(null, Utilitarios.getDefaultGsonBuilder(null).create().toJson(r));
-    }
-
-    public void atualizarPedido(Pedido p) {
-        JSFunction function = browser.executeJavaScriptAndReturnValue("window.addPedido").asFunction();
-        function.invoke(null, Utilitarios.getDefaultGsonBuilder(null).create().toJson(p), p.getUuid().toString());
     }
 
     public void imprimirPedido(Pedido pedido) {
@@ -147,8 +147,6 @@ public class Inicio extends JFrame {
         if (!eventosImpressao.concluirPedido(pedido, aviso)) {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao marcar o pedido #" + pedido.getCod() + " como concluido, o suporte foi notificado!", "error");
-        } else {
-            atualizarLista();
         }
     }
 
@@ -158,8 +156,6 @@ public class Inicio extends JFrame {
         if (!eventosImpressao.sairEntregaPedido(pedido, aviso)) {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao marcar o pedido #" + pedido.getCod() + " como saindo para entrega, o suporte foi notificado!", "error");
-        } else {
-            atualizarLista();
         }
     }
 
@@ -169,8 +165,6 @@ public class Inicio extends JFrame {
         if (!eventosImpressao.cancelarPedido(pedido)) {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao marcar o pedido #" + pedido.getCod() + " como cancelado, o suporte foi notificado!", "error");
-        } else {
-            atualizarLista();
         }
     }
 
@@ -277,6 +271,12 @@ public class Inicio extends JFrame {
                         trayImpressao.displayMenssage("Novo Pedido #" + pedido.getCod());
                         addPedido(pedido);
                         imprimirPedido(pedido);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }, (Pedido pedido) -> {
+                    try {
+                        updatePedido(pedido);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
