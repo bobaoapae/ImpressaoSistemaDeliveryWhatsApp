@@ -5,15 +5,12 @@ import email.com.gmail.ttsai0509.escpos.command.Align;
 import email.com.gmail.ttsai0509.escpos.command.Cut;
 import modelo.*;
 import org.apache.commons.collections4.CollectionUtils;
-import utils.Image;
 
-import javax.imageio.ImageIO;
 import javax.print.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,59 +33,29 @@ public class ControleImpressao {
         IMPRESSAO_80MM
     }
 
-    public boolean imprimir(File file) {
-        try {
-            EscPosBuilder builder = new EscPosBuilder().initialize();
-            BufferedImage image = ImageIO.read(file);
-            Image img = new Image();
-            int[][] pixels = img.getPixelsSlow(image);
-            byte[] LINE_SPACE_24 = {0x1b, 0x33, 24};
-            byte[] SELECT_BIT_IMAGE_MODE = {0x1B, 0x2A, 33};
-            byte[] CTL_LF = {0x0a};
-            for (int y = 0; y < pixels.length; y += 24) {
-                builder.raw(LINE_SPACE_24);
-                builder.raw(SELECT_BIT_IMAGE_MODE);
-                builder.raw(new byte[]{(byte) (0x00ff & pixels[y].length), (byte) ((0xff00 & pixels[y].length) >> 8)});
-                for (int x = 0; x < pixels[y].length; x++) {
-                    builder.raw(img.recollectSlice(y, x, pixels));
-                }
-                builder.raw(CTL_LF);
-            }
-            try {
-                if (Configuracao.getInstance().isImpressaoHabilitada()) {
-                    PrintService impressoraGeral = selectImpress(Configuracao.getInstance().getNomeImpressora());
-                    if (impressoraGeral == null) {
-                        throw new Exception("Impressora Geral não instalada");
-                    }
-                    imprimirBytes(builder.getBytes(), impressoraGeral);
-                } else {
-                    //System.out.println(.toString());
-                }
-                return true;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                return false;
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return false;
-    }
-
     public boolean imprimir(Pedido p) {
         try {
+            int horaAtual = LocalTime.now().getHour();
+            String saudacao = "";
+            if (horaAtual >= 2 && horaAtual < 12) {
+                saudacao = "Ótimo Dia";
+            } else if (horaAtual >= 12 && horaAtual < 18) {
+                saudacao = "Ótima Tarde";
+            } else {
+                saudacao = "Ótima Noite";
+            }
             DecimalFormat moneyFormat = new DecimalFormat("###,###,###.00");
             EscPosBuilder builderImpressaoGeral = new EscPosBuilder().initialize();
             if (p.getNumeroMesa() <= 0) {
                 builderImpressaoGeral.
                         font(email.com.gmail.ttsai0509.escpos.command.Font.DWDH_EMPHASIZED).align(Align.CENTER).text(Configuracao.getInstance().getNomeEstabelecimento() + "\r\n").font(email.com.gmail.ttsai0509.escpos.command.Font.REGULAR).feed(2);
-                builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.DWDH_EMPHASIZED).text("Ótima Noite\r\n" + p.getCliente().getNome() + "\r\n").text("Bom Apetite!").feed(6).cut(Cut.PART);
+                builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.DWDH_EMPHASIZED).text(saudacao + "\r\n" + p.getCliente().getNome() + "\r\n").text("Bom Apetite!").feed(6).cut(Cut.PART);
                 builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.DH);
             }
             SimpleDateFormat formatadorData = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-            builderImpressaoGeral.text(getStringWithSpacer("Data:", formatadorData.format(p.getDataPedido()), 48, "."));
+            builderImpressaoGeral.text(getStringWithSpacer("Data:", formatadorData.format(p.getDataPedido()), 42, "."));
             builderImpressaoGeral.text("\r\n");
-            builderImpressaoGeral.text(getStringWithSpacer("Pedido:", "#" + p.getCod() + "", 48, "."));
+            builderImpressaoGeral.text(getStringWithSpacer("Pedido:", "#" + p.getCod() + "", 42, "."));
             builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.DH);
             if (p.getNumeroMesa() > 0) {
                 builderImpressaoGeral.text("\r\n");
@@ -117,7 +84,7 @@ public class ControleImpressao {
                 }
                 p.getProdutos().removeAll(aRemover);
                 for (ItemPedido item : p.getProdutos()) {
-                    builderImpressaoGeral.text((getStringWithSpacer(item.getQtd() + " ", item.getProduto().getNomeWithCategories(), 22, ".")));
+                    builderImpressaoGeral.text((getStringWithSpacer(item.getQtd() + " ", item.getProduto().getNomeWithCategories(), 21, ".")));
                     builderImpressaoGeral.text("\r\n");
                     Map<String, List<AdicionalProduto>> adicionaisGrupos = item.getAdicionaisGroupByGrupo();
                     for (Map.Entry<String, List<AdicionalProduto>> entry : adicionaisGrupos.entrySet()) {
@@ -129,13 +96,13 @@ public class ControleImpressao {
                     }
                     if (item.getComentario() != null && !item.getComentario().isEmpty()) {
                         builderImpressaoGeral.text("\r\n");
-                        builderImpressaoGeral.text((getStringWithSpacer("Obs:", item.getComentario(), 24, ".")));
+                        builderImpressaoGeral.text((getStringWithSpacer("Obs: ", item.getComentario(), 21, ".")));
                     }
                     builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.REGULAR);
-                    builderImpressaoGeral.text((getStringWithSpacer("Valor:", "R$ " + moneyFormat.format(item.getSubTotal()), 48, ".")));
+                    builderImpressaoGeral.text((getStringWithSpacer("Valor: ", "R$ " + moneyFormat.format(item.getSubTotal()), 42, ".")));
                     builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.DW);
                     builderImpressaoGeral.text("\r\n");
-                    builderImpressaoGeral.text((getStringWithSpacer("", "", 24, "-")));
+                    builderImpressaoGeral.text((getStringWithSpacer("", "", 21, "-")));
                     builderImpressaoGeral.text("\r\n");
                 }
             }
@@ -144,14 +111,14 @@ public class ControleImpressao {
             builderImpressaoGeral.text("\r\n");
             builderImpressaoGeral.align(Align.LEFT);
             builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.REGULAR);
-            builderImpressaoGeral.text(getStringWithSpacer("Nome: ", p.getCliente().getNome(), 48, "."));
+            builderImpressaoGeral.text(getStringWithSpacer("Nome: ", p.getCliente().getNome(), 42, "."));
             builderImpressaoGeral.text("\r\n");
             if (!p.getCliente().getTelefoneMovel().isEmpty()) {
-                builderImpressaoGeral.text(getStringWithSpacer("Celular: ", p.getCliente().getTelefoneMovel(), 48, "."));
+                builderImpressaoGeral.text(getStringWithSpacer("Celular: ", p.getCliente().getTelefoneMovel(), 42, "."));
                 builderImpressaoGeral.text("\r\n");
             }
             if (!p.getCliente().getTelefoneFixo().isEmpty()) {
-                builderImpressaoGeral.text(getStringWithSpacer("Fixo: ", p.getCliente().getTelefoneFixo(), 48, "."));
+                builderImpressaoGeral.text(getStringWithSpacer("Fixo: ", p.getCliente().getTelefoneFixo(), 42, "."));
                 builderImpressaoGeral.text("\r\n");
             }
             if (p.getNumeroMesa() == 0) {
@@ -160,19 +127,22 @@ public class ControleImpressao {
                     builderImpressaoGeral.align(Align.CENTER);
                     builderImpressaoGeral.text("***Endereço para " + p.getTipoEntrega() == null ? "Entrega" : p.getTipoEntrega().getNome() + "***\r\n");
                     builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.REGULAR);
-                    builderImpressaoGeral.text((getStringWithSpacer("", "", 48, "-")));
+                    builderImpressaoGeral.text((getStringWithSpacer("", "", 42, "-")));
                     builderImpressaoGeral.text(p.getEndereco().toString());
                     builderImpressaoGeral.text("\r\n");
-                    builderImpressaoGeral.text((getStringWithSpacer("", "", 48, "-")));
+                    builderImpressaoGeral.text((getStringWithSpacer("", "", 42, "-")));
                     builderImpressaoGeral.text("\r\n");
                 } else {
-                    builderImpressaoGeral.text(p.getTipoEntrega() == null ? "Retirar no Local" : p.getTipoEntrega().getNome());
+                    builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.EMPHASIZED);
+                    builderImpressaoGeral.align(Align.CENTER);
+                    builderImpressaoGeral.text("***" + (p.getTipoEntrega() == null ? "Retirar no Local" : p.getTipoEntrega().getNome()) + "***\r\n");
+                    builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.REGULAR);
                 }
                 builderImpressaoGeral.text("\r\n");
-                builderImpressaoGeral.text((getStringWithSpacer("", "", 48, "-")));
+                builderImpressaoGeral.text((getStringWithSpacer("", "", 42, "-")));
                 builderImpressaoGeral.text("\r\n");
                 builderImpressaoGeral.text("\r\n");
-                builderImpressaoGeral.text(getStringWithSpacer("Total: ", moneyFormat.format(p.getTotal()), 48, "."));
+                builderImpressaoGeral.text(getStringWithSpacer("Total: ", moneyFormat.format(p.getTotal()), 42, "."));
                 builderImpressaoGeral.text("\r\n");
                 if (p.isEntrega()) {
                     if (p.isCartao()) {
@@ -186,30 +156,30 @@ public class ControleImpressao {
                         builderImpressaoGeral.align(Align.LEFT);
                     } else if (p.getTroco() != 0) {
                         builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.EMPHASIZED);
-                        builderImpressaoGeral.text((getStringWithSpacer("Valor do Troco:", "R$" + moneyFormat.format(p.getTroco() - p.getTotal()), 48, ".")));
+                        builderImpressaoGeral.text((getStringWithSpacer("Valor do Troco: ", "R$" + moneyFormat.format(p.getTroco() - p.getTotal()), 42, ".")));
                         builderImpressaoGeral.text("\r\n");
                         builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.REGULAR);
                         builderImpressaoGeral.align(Align.LEFT);
                     }
                     if (p.getHoraAgendamento() != null) {
-                        builderImpressaoGeral.text((getStringWithSpacer("Horario para Entrega:", p.getHoraAgendamento().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")), 48, ".")));
+                        builderImpressaoGeral.text((getStringWithSpacer("Horario para Entrega: ", p.getHoraAgendamento().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")), 42, ".")));
                     }
                 } else {
                     if (p.getHoraAgendamento() != null) {
-                        builderImpressaoGeral.text((getStringWithSpacer("Horario para Retirada:", p.getHoraAgendamento().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")), 48, ".")));
+                        builderImpressaoGeral.text((getStringWithSpacer("Horario para Retirada: ", p.getHoraAgendamento().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")), 42, ".")));
                     }
                 }
                 builderImpressaoGeral.text("\r\n");
             }
             builderImpressaoGeral.text("\r\n");
-            builderImpressaoGeral.text((getStringWithSpacer("", "", 48, "#")));
+            builderImpressaoGeral.text((getStringWithSpacer("", "", 42, "#")));
             builderImpressaoGeral.feed(8).cut(Cut.FULL);
             byte[] textoGeral = removerAcentos(builderImpressaoGeral.toString()).getBytes();
             try {
                 if (Configuracao.getInstance().isImpressaoHabilitada()) {
                     PrintService impressoraGeral = selectImpress(Configuracao.getInstance().getNomeImpressora());
                     if (impressoraGeral == null) {
-                        throw new Exception("Impressora Geral não instalada");
+                        throw new Exception("Impressora " + Configuracao.getInstance().getNomeImpressora() + " não instalada");
                     }
                     imprimirBytes(textoGeral, impressoraGeral);
                 } else {

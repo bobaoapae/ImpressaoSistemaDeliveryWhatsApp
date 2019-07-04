@@ -43,9 +43,8 @@ public class Utilitarios {
             URLConnection connection = website.openConnection();
             connection.addRequestProperty("User-Agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(
-                            connection.getInputStream()));
+            connection.setRequestProperty("Accept-Charset", "UTF-8");
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
 
             StringBuilder response = new StringBuilder();
             String inputLine;
