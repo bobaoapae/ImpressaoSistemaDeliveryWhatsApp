@@ -8,6 +8,7 @@ import modelo.Pedido;
 import modelo.Reserva;
 import utils.Utilitarios;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,7 @@ public class EventosImpressao implements EventHandler {
     private EventSource source;
     private boolean aleardyOpen = false;
     private ActionOnAjuda actionOnAjuda;
-    private String endPoint = "http://zapia.com.br:8080";
+    private String endPoint;
 
     public EventosImpressao(String token, ActionOnNovoPedido actionOnNovoPedido, ActionOnUpdatePedido actionOnUpdatePedido, ActionOnNovaReserva actionOnNovaReserva, ActionOnAjuda actionOnAjuda, Runnable open, Runnable disconnect, ActionOnError actionOnError, Runnable onLogout) {
         this.actionOnNovoPedido = actionOnNovoPedido;
@@ -38,6 +39,11 @@ public class EventosImpressao implements EventHandler {
         this.disconnect = disconnect;
         this.onLogout = onLogout;
         builder = Utilitarios.getDefaultGsonBuilder(null).create();
+        if (new File("homologa.zapia").exists()) {
+            this.endPoint = "http://zapia.com.br:8081";
+        } else {
+            this.endPoint = "http://zapia.com.br:8080";
+        }
         EventSource.Builder builder = new EventSource.Builder(this, URI.create("" + endPoint + "/api/eventos?token=" + token));
         EventSource eventSource = builder.build();
         eventSource.setReconnectionTimeMs(300);

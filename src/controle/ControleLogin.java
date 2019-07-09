@@ -4,15 +4,21 @@ import com.google.gson.JsonParser;
 import modelo.Usuario;
 import utils.Utilitarios;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.UUID;
 
 public class ControleLogin {
-    private String endPoint = "http://zapia.com.br:8080";
+    private String endPoint;
     private static ControleLogin instance;
 
     private ControleLogin() {
+        if (new File("homologa.zapia").exists()) {
+            this.endPoint = "http://zapia.com.br:8081";
+        } else {
+            this.endPoint = "http://zapia.com.br:8080";
+        }
     }
 
     public Usuario getUsuario(String usuario, String senha) {
