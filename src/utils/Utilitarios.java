@@ -11,16 +11,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.sql.Timestamp;
 
 public class Utilitarios {
     public static GsonBuilder getDefaultGsonBuilder(Type type) {
         GsonBuilder builder = new GsonBuilder().disableHtmlEscaping().
-                registerTypeAdapter(LocalTime.class, new DateAdapterSerialize()).
-                registerTypeAdapter(LocalTime.class, new DateAdapterDeserialize()).
-                registerTypeAdapter(LocalDate.class, new TimestampAdapterSerialize()).
-                registerTypeAdapter(LocalDate.class, new TimestampAdapterDeserialize()).
+                registerTypeAdapter(java.sql.Date.class, new DateAdapterSerialize()).
+                registerTypeAdapter(java.sql.Date.class, new DateAdapterDeserialize()).
+                registerTypeAdapter(Timestamp.class, new TimestampAdapterSerialize()).
+                registerTypeAdapter(Timestamp.class, new TimestampAdapterDeserialize()).
                 registerTypeAdapter(Time.class, new TimeAdapter()).
                 registerTypeAdapter(Time.class, new TimeAdapterDeserialize()).
                 setDateFormat("dd/MM/yyyy HH:mm:ss");
