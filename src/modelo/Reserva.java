@@ -1,9 +1,6 @@
 package modelo;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
-
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 

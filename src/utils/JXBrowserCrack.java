@@ -9,9 +9,10 @@ package utils;
  * @author jvbor
  */
 
-import com.teamdev.jxbrowser.chromium.bb;
+import com.teamdev.jxbrowser.chromium.be;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 
@@ -24,11 +25,11 @@ public class JXBrowserCrack {
 
     static {
         try {
-            Field e = bb.class.getDeclaredField("e");
+            Field e = be.class.getDeclaredField("e");
             e.setAccessible(true);
-            Field f = bb.class.getDeclaredField("f");
+            Field f = be.class.getDeclaredField("f");
             f.setAccessible(true);
-            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            Field modifiersField = getModifierField();
             modifiersField.setAccessible(true);
             modifiersField.setInt(e, e.getModifiers() & ~Modifier.FINAL);
             modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
@@ -38,6 +39,21 @@ public class JXBrowserCrack {
             System.out.println("JXBrowser Cracked");
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public static Field getModifierField() {
+        try {
+            Method getDeclaredFields0M = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+            getDeclaredFields0M.setAccessible(true);
+            Field[] fields = (Field[]) getDeclaredFields0M.invoke(Field.class, false);
+            for (Field field : fields)
+                if (field.getName().equals("modifiers")) {
+                    return field;
+                }
+            return null;
+        } catch (Throwable ex) {
+            throw new UnsupportedOperationException(ex);
         }
     }
 
