@@ -9,7 +9,7 @@ package utils;
  * @author jvbor
  */
 
-import com.teamdev.jxbrowser.chromium.be;
+import com.teamdev.jxbrowser.chromium.bb;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -25,9 +25,9 @@ public class JXBrowserCrack {
 
     static {
         try {
-            Field e = be.class.getDeclaredField("e");
+            Field e = bb.class.getDeclaredField("e");
             e.setAccessible(true);
-            Field f = be.class.getDeclaredField("f");
+            Field f = bb.class.getDeclaredField("f");
             f.setAccessible(true);
             Field modifiersField = getModifierField();
             modifiersField.setAccessible(true);

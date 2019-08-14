@@ -40,9 +40,9 @@ public class EventosImpressao implements EventHandler {
         this.onLogout = onLogout;
         builder = Utilitarios.getDefaultGsonBuilder(null).create();
         if (new File("homologa.zapia").exists()) {
-            this.endPoint = "http://zapia.com.br:8880";
+            this.endPoint = "https://zapia.com.br:8444";
         } else {
-            this.endPoint = "http://zapia.com.br:8080";
+            this.endPoint = "https://zapia.com.br:8443";
         }
         EventSource.Builder builder = new EventSource.Builder(this, URI.create("" + endPoint + "/api/eventos?token=" + token));
         EventSource eventSource = builder.build();

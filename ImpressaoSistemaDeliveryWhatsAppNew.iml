@@ -12,6 +12,6 @@
     <orderEntry type="library" name="EscPos-1.2" level="project" />
     <orderEntry type="library" name="com.launchdarkly:okhttp-eventsource:1.8.0" level="project" />
     <orderEntry type="library" name="org.apache.commons:commons-collections4:4.2" level="project" />
-    <orderEntry type="library" name="jxbrowser-6.23" level="project" />
+    <orderEntry type="library" name="jxbrowser-6.23.1" level="project" />
   </component>
 </module>

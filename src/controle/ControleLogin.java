@@ -15,9 +15,9 @@ public class ControleLogin {
 
     private ControleLogin() {
         if (new File("homologa.zapia").exists()) {
-            this.endPoint = "http://zapia.com.br:8880";
+            this.endPoint = "https://zapia.com.br:8444";
         } else {
-            this.endPoint = "http://zapia.com.br:8080";
+            this.endPoint = "https://zapia.com.br:8443";
         }
     }
 
