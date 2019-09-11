@@ -5,9 +5,8 @@
  */
 package modelo;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -21,27 +20,16 @@ public class Pedido {
     private double troco, desconto, pgCreditos, subTotal, taxaEntrega, total, valorPago, totalRemovido;
     private int numeroMesa;
     private String comentarioPedido;
-    private Timestamp dataPedido;
+    private LocalDateTime dataPedido;
     private EstadoPedido estadoPedido;
     private String celular, fixo;
-    private Time horaAgendamento;
+    private LocalTime horaAgendamento;
     private long cod;
     private List<ItemPedido> produtos;
     private Cliente cliente;
     private transient Estabelecimento estabelecimento;
     private Endereco endereco;
     private TipoEntrega tipoEntrega;
-
-    public Pedido(Cliente cliente, Estabelecimento estabelecimento) {
-        produtos = Collections.synchronizedList(new ArrayList<>());
-        dataPedido = Timestamp.valueOf(LocalDateTime.now());
-        estadoPedido = EstadoPedido.Novo;
-        celular = "";
-        fixo = "";
-        comentarioPedido = "";
-        this.estabelecimento = estabelecimento;
-        this.cliente = cliente;
-    }
 
     public Pedido() {
     }
@@ -188,11 +176,11 @@ public class Pedido {
         this.comentarioPedido = comentarioPedido;
     }
 
-    public Timestamp getDataPedido() {
+    public LocalDateTime getDataPedido() {
         return dataPedido;
     }
 
-    public void setDataPedido(Timestamp dataPedido) {
+    public void setDataPedido(LocalDateTime dataPedido) {
         this.dataPedido = dataPedido;
     }
 
@@ -226,11 +214,11 @@ public class Pedido {
         this.fixo = fixo;
     }
 
-    public Time getHoraAgendamento() {
+    public LocalTime getHoraAgendamento() {
         return horaAgendamento;
     }
 
-    public void setHoraAgendamento(Time horaAgendamento) {
+    public void setHoraAgendamento(LocalTime horaAgendamento) {
         this.horaAgendamento = horaAgendamento;
     }
 

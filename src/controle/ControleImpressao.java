@@ -9,7 +9,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import javax.print.*;
 import java.text.DecimalFormat;
 import java.text.Normalizer;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -52,8 +51,7 @@ public class ControleImpressao {
                 builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.DWDH_EMPHASIZED).text(saudacao + "\r\n" + p.getCliente().getNome() + "\r\n").text("Bom Apetite!").feed(6).cut(Cut.PART);
                 builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.DH);
             }
-            SimpleDateFormat formatadorData = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-            builderImpressaoGeral.text(getStringWithSpacer("Data:", formatadorData.format(p.getDataPedido()), 42, "."));
+            builderImpressaoGeral.text(getStringWithSpacer("Data:", p.getDataPedido().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), 42, "."));
             builderImpressaoGeral.text("\r\n");
             builderImpressaoGeral.text(getStringWithSpacer("Pedido:", "#" + p.getCod() + "", 42, "."));
             builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.DH);
@@ -162,11 +160,11 @@ public class ControleImpressao {
                         builderImpressaoGeral.align(Align.LEFT);
                     }
                     if (p.getHoraAgendamento() != null) {
-                        builderImpressaoGeral.text((getStringWithSpacer("Horario para Entrega: ", p.getHoraAgendamento().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")), 42, ".")));
+                        builderImpressaoGeral.text((getStringWithSpacer("Horario para Entrega: ", p.getHoraAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")), 42, ".")));
                     }
                 } else {
                     if (p.getHoraAgendamento() != null) {
-                        builderImpressaoGeral.text((getStringWithSpacer("Horario para Retirada: ", p.getHoraAgendamento().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")), 42, ".")));
+                        builderImpressaoGeral.text((getStringWithSpacer("Horario para Retirada: ", p.getHoraAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")), 42, ".")));
                     }
                 }
                 builderImpressaoGeral.text("\r\n");
@@ -199,8 +197,6 @@ public class ControleImpressao {
 
     public boolean imprimir(Reserva r) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM");
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
             EscPosBuilder builderImpressaoGeral = new EscPosBuilder().initialize();
             builderImpressaoGeral.font(email.com.gmail.ttsai0509.escpos.command.Font.DH);
             builderImpressaoGeral.align(Align.CENTER);
@@ -215,9 +211,9 @@ public class ControleImpressao {
             builderImpressaoGeral.text("\r\n");
             builderImpressaoGeral.text(getStringWithSpacer("Número de Pessoas: ", r.getQtdPessoas() + "", 42, "."));
             builderImpressaoGeral.text("\r\n");
-            builderImpressaoGeral.text(getStringWithSpacer("Data Reserva: ", dateFormat.format(r.getDataReserva()), 42, "."));
+            builderImpressaoGeral.text(getStringWithSpacer("Data Reserva: ", r.getDataReserva().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), 42, "."));
             builderImpressaoGeral.text("\r\n");
-            builderImpressaoGeral.text(getStringWithSpacer("Horario Reserva: ", timeFormat.format(r.getDataReserva()), 42, "."));
+            builderImpressaoGeral.text(getStringWithSpacer("Horario Reserva: ", r.getDataReserva().format(DateTimeFormatter.ofPattern("HH:mm")), 42, "."));
             builderImpressaoGeral.text("\r\n");
             builderImpressaoGeral.text((getStringWithSpacer("", "", 42, "#")));
             builderImpressaoGeral.feed(8).cut(Cut.FULL);

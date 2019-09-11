@@ -5,7 +5,7 @@
  */
 package modelo;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -15,20 +15,12 @@ import java.util.UUID;
 public class RecargaCliente {
 
     private UUID uuid, uuid_cliente, uuid_estabelecimento;
-    private Date dataRecarga;
+    private LocalDate dataRecarga;
     boolean ativo;
     private transient Estabelecimento estabelecimento;
     private transient Cliente cliente;
     private TipoRecarga tipoRecarga;
     private double valor;
-
-    public RecargaCliente(Estabelecimento estabelecimento, Cliente cliente, double valor, TipoRecarga tipoRecarga) {
-        this.valor = valor;
-        this.estabelecimento = estabelecimento;
-        this.cliente = cliente;
-        dataRecarga = new Date();
-        this.tipoRecarga = tipoRecarga;
-    }
 
     public RecargaCliente() {
     }
@@ -41,11 +33,11 @@ public class RecargaCliente {
         this.ativo = ativo;
     }
 
-    public Date getDataRecarga() {
+    public LocalDate getDataRecarga() {
         return dataRecarga;
     }
 
-    public void setDataRecarga(Date dataRecarga) {
+    public void setDataRecarga(LocalDate dataRecarga) {
         this.dataRecarga = dataRecarga;
     }
 

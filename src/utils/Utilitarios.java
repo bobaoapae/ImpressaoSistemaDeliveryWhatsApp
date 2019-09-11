@@ -10,19 +10,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 
 public class Utilitarios {
     public static GsonBuilder getDefaultGsonBuilder(Type type) {
         GsonBuilder builder = new GsonBuilder().disableHtmlEscaping().
-                registerTypeAdapter(java.sql.Date.class, new DateAdapterSerialize()).
-                registerTypeAdapter(java.sql.Date.class, new DateAdapterDeserialize()).
-                registerTypeAdapter(Timestamp.class, new TimestampAdapterSerialize()).
-                registerTypeAdapter(Timestamp.class, new TimestampAdapterDeserialize()).
-                registerTypeAdapter(Time.class, new TimeAdapter()).
-                registerTypeAdapter(Time.class, new TimeAdapterDeserialize()).
-                setDateFormat("dd/MM/yyyy HH:mm:ss");
+                registerTypeAdapter(LocalTime.class, new LocalTimeAdapterSerialize()).
+                registerTypeAdapter(LocalTime.class, new LocalTimeAdapterDeserialize()).
+                registerTypeAdapter(LocalDate.class, new LocalDateAdapterSerialize()).
+                registerTypeAdapter(LocalDate.class, new LocalDateAdapterDeserialize()).
+                registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapterSerialize()).
+                registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapterDeserialize()).
+                registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapterSerialize()).
+                registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapterDeserialize());
         return builder;
     }
 

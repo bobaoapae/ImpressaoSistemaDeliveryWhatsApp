@@ -1,8 +1,10 @@
 package modelo;
 
-import java.sql.Time;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Estabelecimento {
 
@@ -11,33 +13,23 @@ public class Estabelecimento {
     private int tempoMedioRetirada, tempoMedioEntrega;
     private boolean openPedidos, openChatBot, reservas, reservasComPedidosFechados, abrirFecharPedidosAutomaticamente;
     private boolean agendamentoDePedidos, ativo;
-    private Date horaAberturaPedidos;
-    private Time horaAutomaticaFecharPedidos, horaAutomaticaAbrirPedidos, horaInicioReservas;
+    private LocalDateTime horaAberturaPedidos;
+    private LocalTime horaInicioReservas;
     private double taxaEntregaFixa, taxaEntregaKm, valorSelo;
     private List<Categoria> categorias;
     private List<Rodizio> rodizios;
     private int maximoSeloPorCompra, validadeSeloFidelidade;
 
-    public List<Rodizio> getRodizios() {
-        return rodizios;
+
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public void setRodizios(List<Rodizio> rodizios) {
-        this.rodizios = Collections.synchronizedList(rodizios);
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getNomeEstabelecimento() {
-        if (nomeEstabelecimento == null) {
-            return "";
-        }
         return nomeEstabelecimento;
     }
 
@@ -46,9 +38,6 @@ public class Estabelecimento {
     }
 
     public String getNomeBot() {
-        if (nomeBot == null) {
-            return "";
-        }
         return nomeBot;
     }
 
@@ -57,9 +46,6 @@ public class Estabelecimento {
     }
 
     public String getNumeroAviso() {
-        if (numeroAviso == null) {
-            return "";
-        }
         return numeroAviso;
     }
 
@@ -68,9 +54,6 @@ public class Estabelecimento {
     }
 
     public String getWebHookNovoPedido() {
-        if (webHookNovoPedido == null) {
-            return "";
-        }
         return webHookNovoPedido;
     }
 
@@ -79,9 +62,6 @@ public class Estabelecimento {
     }
 
     public String getWebHookNovaReserva() {
-        if (webHookNovaReserva == null) {
-            return "";
-        }
         return webHookNovaReserva;
     }
 
@@ -90,30 +70,11 @@ public class Estabelecimento {
     }
 
     public String getLogo() {
-        if (logo == null) {
-            return "";
-        }
         return logo;
     }
 
     public void setLogo(String logo) {
         this.logo = logo;
-    }
-
-    public List<Categoria> getCategorias() {
-        return categorias;
-    }
-
-    public void setCategorias(List<Categoria> categorias) {
-        this.categorias = Collections.synchronizedList(categorias);
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 
     public int getTempoMedioRetirada() {
@@ -137,9 +98,6 @@ public class Estabelecimento {
     }
 
     public void setOpenPedidos(boolean openPedidos) {
-        if (openPedidos && !this.openPedidos) {
-            this.horaAberturaPedidos = new Date();
-        }
         this.openPedidos = openPedidos;
     }
 
@@ -183,60 +141,28 @@ public class Estabelecimento {
         this.agendamentoDePedidos = agendamentoDePedidos;
     }
 
-    public Time getHoraAutomaticaFecharPedidos() {
-        return horaAutomaticaFecharPedidos;
+    public boolean isAtivo() {
+        return ativo;
     }
 
-    public void setHoraAutomaticaFecharPedidos(Time horaAutomaticaFecharPedidos) {
-        this.horaAutomaticaFecharPedidos = horaAutomaticaFecharPedidos;
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
-    public Time getHoraAutomaticaAbrirPedidos() {
-        return horaAutomaticaAbrirPedidos;
-    }
-
-    public void setHoraAutomaticaAbrirPedidos(Time horaAutomaticaAbrirPedidos) {
-        this.horaAutomaticaAbrirPedidos = horaAutomaticaAbrirPedidos;
-    }
-
-    public Time getHoraInicioReservas() {
-        return horaInicioReservas;
-    }
-
-    public void setHoraInicioReservas(Time horaInicioReservas) {
-        this.horaInicioReservas = horaInicioReservas;
-    }
-
-    public double getValorSelo() {
-        return valorSelo;
-    }
-
-    public void setValorSelo(double valorSelo) {
-        this.valorSelo = valorSelo;
-    }
-
-    public int getMaximoSeloPorCompra() {
-        return maximoSeloPorCompra;
-    }
-
-    public void setMaximoSeloPorCompra(int maximoSeloPorCompra) {
-        this.maximoSeloPorCompra = maximoSeloPorCompra;
-    }
-
-    public int getValidadeSeloFidelidade() {
-        return validadeSeloFidelidade;
-    }
-
-    public void setValidadeSeloFidelidade(int validadeSeloFidelidade) {
-        this.validadeSeloFidelidade = validadeSeloFidelidade;
-    }
-
-    public Date getHoraAberturaPedidos() {
+    public LocalDateTime getHoraAberturaPedidos() {
         return horaAberturaPedidos;
     }
 
-    public void setHoraAberturaPedidos(Date horaAberturaPedidos) {
+    public void setHoraAberturaPedidos(LocalDateTime horaAberturaPedidos) {
         this.horaAberturaPedidos = horaAberturaPedidos;
+    }
+
+    public LocalTime getHoraInicioReservas() {
+        return horaInicioReservas;
+    }
+
+    public void setHoraInicioReservas(LocalTime horaInicioReservas) {
+        this.horaInicioReservas = horaInicioReservas;
     }
 
     public double getTaxaEntregaFixa() {
@@ -255,17 +181,44 @@ public class Estabelecimento {
         this.taxaEntregaKm = taxaEntregaKm;
     }
 
-    public boolean isTimeBeetwenHorarioFuncionamento(LocalTime horaInformada) {
-        if (this.getHoraAutomaticaAbrirPedidos().toLocalTime().isAfter(this.getHoraAutomaticaFecharPedidos().toLocalTime())) {
-            if (!(horaInformada.isBefore(this.getHoraAutomaticaAbrirPedidos().toLocalTime()) && horaInformada.isAfter(this.getHoraAutomaticaFecharPedidos().toLocalTime()))) {
-                return true;
-            }
-        } else {
-            if (horaInformada.isAfter(this.getHoraAutomaticaAbrirPedidos().toLocalTime()) && horaInformada.isBefore(this.getHoraAutomaticaFecharPedidos().toLocalTime())) {
-                return true;
-            }
-        }
-        return false;
+    public double getValorSelo() {
+        return valorSelo;
+    }
+
+    public void setValorSelo(double valorSelo) {
+        this.valorSelo = valorSelo;
+    }
+
+    public List<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public void setCategorias(List<Categoria> categorias) {
+        this.categorias = categorias;
+    }
+
+    public List<Rodizio> getRodizios() {
+        return rodizios;
+    }
+
+    public void setRodizios(List<Rodizio> rodizios) {
+        this.rodizios = rodizios;
+    }
+
+    public int getMaximoSeloPorCompra() {
+        return maximoSeloPorCompra;
+    }
+
+    public void setMaximoSeloPorCompra(int maximoSeloPorCompra) {
+        this.maximoSeloPorCompra = maximoSeloPorCompra;
+    }
+
+    public int getValidadeSeloFidelidade() {
+        return validadeSeloFidelidade;
+    }
+
+    public void setValidadeSeloFidelidade(int validadeSeloFidelidade) {
+        this.validadeSeloFidelidade = validadeSeloFidelidade;
     }
 
     @Override

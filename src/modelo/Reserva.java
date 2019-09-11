@@ -1,6 +1,6 @@
 package modelo;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -8,7 +8,7 @@ public class Reserva {
 
     private UUID uuid, uuid_estabelecimento, uuid_cliente;
     private String telefoneContato, nomeContato, comentario;
-    private Timestamp dataReserva;
+    private LocalDateTime dataReserva;
     private int qtdPessoas;
     private boolean impresso;
     private int cod;
@@ -57,11 +57,11 @@ public class Reserva {
         this.nomeContato = nomeContato;
     }
 
-    public Timestamp getDataReserva() {
+    public LocalDateTime getDataReserva() {
         return dataReserva;
     }
 
-    public void setDataReserva(Timestamp dataReserva) {
+    public void setDataReserva(LocalDateTime dataReserva) {
         this.dataReserva = dataReserva;
     }
 

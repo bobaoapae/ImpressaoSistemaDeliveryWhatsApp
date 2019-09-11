@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Main-Class: visao.Inicio
+Class-Path: lib/jxbrowser-6.23.1.jar lib/licenseCrack.jar lib/jxbrowser-win32-6.23.1
+ .jar lib/jxbrowser-win64-6.23.1.jar lib/okhttp-eventsource-1.8.0.jar lib/okhttp-3.8
+ .1.jar lib/okio-1.13.0.jar lib/slf4j-api-1.7.22.jar lib/jsr305-3.0.2.jar lib/gson-2.8.5
+ .jar lib/EscPos-1.2.jar lib/commons-collections4-4.2.jar
+
