@@ -3,15 +3,9 @@ package modelo;
 
 import visao.Inicio;
 
-import java.awt.AWTException;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class TrayImpressao {
 
@@ -36,32 +30,15 @@ public class TrayImpressao {
             SystemTray tray = SystemTray.getSystemTray();
             ImageIcon icone = new ImageIcon(getClass().getResource("/img/tray.png"));
             Image image = icone.getImage();
-            ActionListener actionListener = new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mostraEsconde();
-                }
-
-            };
-            ActionListener sairListener = new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    int result = JOptionPane.showConfirmDialog(null, "Deseja realmente sair do sistema?\nObs: Nenhum pedido será impresso se o sistema estiver fechado!", "Atenção!!", JOptionPane.YES_NO_OPTION);
-                    if (result == JOptionPane.YES_OPTION) {
-                        SystemTray.getSystemTray().remove(trayIcon);
-                        System.exit(0);
-                    }
+            ActionListener actionListener = e -> mostraEsconde();
+            ActionListener sairListener = e -> {
+                int result = JOptionPane.showConfirmDialog(null, "Deseja realmente sair do sistema?\nObs: Nenhum pedido será impresso se o sistema estiver fechado!", "Atenção!!", JOptionPane.YES_NO_OPTION);
+                if (result == JOptionPane.YES_OPTION) {
+                    SystemTray.getSystemTray().remove(trayIcon);
+                    System.exit(0);
                 }
             };
-            ActionListener MiniMaxi = new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mostraEsconde();
-                }
-            };
+            ActionListener MiniMaxi = e -> mostraEsconde();
             PopupMenu popup = new PopupMenu();
             MenuItem restauraItem = new MenuItem("Abrir");
             restauraItem.addActionListener(MiniMaxi);

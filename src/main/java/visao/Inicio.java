@@ -1,5 +1,6 @@
 package visao;
 
+import br.com.zapia.crack.JXBrowserCrack;
 import com.teamdev.jxbrowser.chromium.*;
 import com.teamdev.jxbrowser.chromium.dom.By;
 import com.teamdev.jxbrowser.chromium.dom.DOMElement;
@@ -10,7 +11,6 @@ import controle.ControleImpressao;
 import controle.ControleLogin;
 import evento.EventosImpressao;
 import modelo.*;
-import utils.JXBrowserCrack;
 import utils.ProtocolHandlerJar;
 import utils.Utilitarios;
 
@@ -22,6 +22,8 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,13 +38,18 @@ public class Inicio extends JFrame {
     private EventosImpressao eventosImpressao;
     private TrayImpressao trayImpressao;
     private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private LocalDateTime lastPing;
+    private String appdata;
 
     public Inicio() {
         try {
+            appdata = System.getenv("APPDATA") + "\\Zapiá - Delivery\\";
+            System.setProperty("jxbrowser.chromium.dir", appdata + "JxBrowser");
             init();
             this.setLocationRelativeTo(null);
             new JXBrowserCrack();
-            browser = new Browser(ContextManager.getInstance().getContext());
+            browser = new Browser(new BrowserContext(
+                    new BrowserContextParams(appdata + "/cache/" + this.getClass().getName())));
             view = new BrowserView(browser);
             ProtocolService protocolService = browser.getContext().getProtocolService();
             protocolService.setProtocolHandler("jar", new ProtocolHandlerJar());
@@ -106,7 +113,7 @@ public class Inicio extends JFrame {
     }
 
     public void imprimirReserva(Reserva reserva) {
-        if (ControleImpressao.getInstance().imprimir(reserva)) {
+        /*if (ControleImpressao.getInstance().imprimir(reserva)) {
             if (!eventosImpressao.notificarReservaImpressa(reserva)) {
                 JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
                 function.invoke(null, "Ops!", "Ocorreu um erro ao marcar a reserva #" + reserva.getCod() + " como impressa, o suporte foi notificado!", "error");
@@ -114,7 +121,7 @@ public class Inicio extends JFrame {
         } else {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao imprimir a reserva #" + reserva.getCod() + ".\r\nVerifique se a impressora está ligada corretamente.", "error");
-        }
+        }*/
     }
 
     public void imprimirReserva(String uuid) {
@@ -252,7 +259,7 @@ public class Inicio extends JFrame {
                     if (estabelecimento.getUuid().equals(UUID.fromString(uuid))) {
                         trayImpressao = new TrayImpressao(Inicio.this, estabelecimento.getNomeEstabelecimento());
                         if (!estabelecimento.getLogo().isEmpty()) {
-                            byte[] btDataFile = java.util.Base64.getDecoder().decode(estabelecimento.getLogo().split(",")[1]);
+                            byte[] btDataFile = Base64.getDecoder().decode(estabelecimento.getLogo().split(",")[1]);
                             BufferedImage image;
                             try {
                                 image = ImageIO.read(new ByteArrayInputStream(btDataFile));
@@ -315,7 +322,10 @@ public class Inicio extends JFrame {
                     }
                 }, null, null, () -> {
                     trayImpressao.displayMenssage("A conexão falhou, fazendo login novamente!");
+                }, () -> {
+                    lastPing = LocalDateTime.now();
                 });
+                executorService = Executors.newSingleThreadScheduledExecutor();
                 executorService.scheduleWithFixedDelay(() -> {
                     String tokeen = ControleLogin.getInstance().getToken(usuario.getUsuario(), usuario.getSenha(), UUID.fromString(uuid));
                     if (tokeen.isEmpty()) {
@@ -325,6 +335,18 @@ public class Inicio extends JFrame {
                         eventosImpressao.setToken(tokeen);
                     }
                 }, 6, 6, TimeUnit.DAYS);
+                executorService.scheduleWithFixedDelay(() -> {
+                    if (lastPing.plusMinutes(2).isBefore(LocalDateTime.now())) {
+                        System.out.println("Reconectado");
+                        String tokeen = ControleLogin.getInstance().getToken(usuario.getUsuario(), usuario.getSenha(), UUID.fromString(uuid));
+                        if (tokeen.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "Falha ao renovar os dados de acesso, inicie o sistema novamente.");
+                            System.exit(0);
+                        } else {
+                            eventosImpressao.setToken(tokeen);
+                        }
+                    }
+                }, 1, 1, TimeUnit.MINUTES);
                 jsFunction.invoke(jsFunction.asObject(), true);
             } catch (Exception ex) {
                 ex.printStackTrace();

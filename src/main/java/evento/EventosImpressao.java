@@ -20,6 +20,7 @@ public class EventosImpressao implements EventHandler {
     private ActionOnNovoPedido actionOnNovoPedido;
     private ActionOnError actionOnError;
     private ActionOnUpdatePedido actionOnUpdatePedido;
+    private Runnable ping;
     private Runnable disconnect, open, onLogout;
     private Gson builder;
     private String token;
@@ -28,7 +29,7 @@ public class EventosImpressao implements EventHandler {
     private ActionOnAjuda actionOnAjuda;
     private String endPoint;
 
-    public EventosImpressao(String token, ActionOnNovoPedido actionOnNovoPedido, ActionOnUpdatePedido actionOnUpdatePedido, ActionOnNovaReserva actionOnNovaReserva, ActionOnAjuda actionOnAjuda, Runnable open, Runnable disconnect, ActionOnError actionOnError, Runnable onLogout) {
+    public EventosImpressao(String token, ActionOnNovoPedido actionOnNovoPedido, ActionOnUpdatePedido actionOnUpdatePedido, ActionOnNovaReserva actionOnNovaReserva, ActionOnAjuda actionOnAjuda, Runnable open, Runnable disconnect, ActionOnError actionOnError, Runnable onLogout, Runnable ping) {
         this.actionOnNovoPedido = actionOnNovoPedido;
         this.actionOnUpdatePedido = actionOnUpdatePedido;
         this.actionOnNovaReserva = actionOnNovaReserva;
@@ -38,6 +39,7 @@ public class EventosImpressao implements EventHandler {
         this.actionOnError = actionOnError;
         this.disconnect = disconnect;
         this.onLogout = onLogout;
+        this.ping = ping;
         builder = Utilitarios.getDefaultGsonBuilder(null).create();
         if (new File("homologa.zapia").exists()) {
             this.endPoint = "https://zapia.com.br:8444";
@@ -185,6 +187,7 @@ public class EventosImpressao implements EventHandler {
 
     @Override
     public void onMessage(String s, MessageEvent messageEvent) throws Exception {
+        ping.run();
         if (s.equals("novo-pedido")) {
             if (actionOnNovoPedido != null) {
                 String json = Utilitarios.getText("" + endPoint + "/api/pedido?uuid=" + messageEvent.getData() + "&token=" + this.token);
@@ -210,7 +213,6 @@ public class EventosImpressao implements EventHandler {
                 }
             }
         } else if (s.equals("logout")) {
-            //this.source.close();
             if (onLogout != null) {
                 onLogout.run();
             }
