@@ -20,6 +20,7 @@ public class EventosImpressao implements EventHandler {
     private ActionOnNovoPedido actionOnNovoPedido;
     private ActionOnError actionOnError;
     private ActionOnUpdatePedido actionOnUpdatePedido;
+    private ActionOnImprimirNovamente actionOnImprimirNovamente;
     private Runnable ping;
     private Runnable disconnect, open, onLogout;
     private Gson builder;
@@ -29,11 +30,12 @@ public class EventosImpressao implements EventHandler {
     private ActionOnAjuda actionOnAjuda;
     private String endPoint;
 
-    public EventosImpressao(String token, ActionOnNovoPedido actionOnNovoPedido, ActionOnUpdatePedido actionOnUpdatePedido, ActionOnNovaReserva actionOnNovaReserva, ActionOnAjuda actionOnAjuda, Runnable open, Runnable disconnect, ActionOnError actionOnError, Runnable onLogout, Runnable ping) {
+    public EventosImpressao(String token, ActionOnNovoPedido actionOnNovoPedido, ActionOnUpdatePedido actionOnUpdatePedido, ActionOnNovaReserva actionOnNovaReserva, ActionOnImprimirNovamente actionOnImprimirNovamente, ActionOnAjuda actionOnAjuda, Runnable open, Runnable disconnect, ActionOnError actionOnError, Runnable onLogout, Runnable ping) {
         this.actionOnNovoPedido = actionOnNovoPedido;
         this.actionOnUpdatePedido = actionOnUpdatePedido;
         this.actionOnNovaReserva = actionOnNovaReserva;
         this.actionOnAjuda = actionOnAjuda;
+        this.actionOnImprimirNovamente = actionOnImprimirNovamente;
         this.token = token;
         this.open = open;
         this.actionOnError = actionOnError;
@@ -232,6 +234,18 @@ public class EventosImpressao implements EventHandler {
                     }
                 }
             }
+        } else if (s.equals("imprimir_novamente")) {
+            if (actionOnImprimirNovamente != null) {
+                String json = Utilitarios.getText("" + endPoint + "/api/pedido?uuid=" + messageEvent.getData() + "&token=" + this.token);
+                if (!json.isEmpty()) {
+                    Pedido pedido = builder.fromJson(json, Pedido.class);
+                    actionOnImprimirNovamente.run(pedido);
+                } else {
+                    if (this.actionOnError != null) {
+                        this.actionOnError.run(new Throwable("Falha ao baixar o pedido da api "));
+                    }
+                }
+            }
         }
     }
 
@@ -265,5 +279,9 @@ public class EventosImpressao implements EventHandler {
 
     public interface ActionOnAjuda {
         void run(String nome);
+    }
+
+    public interface ActionOnImprimirNovamente {
+        void run(Pedido pedido);
     }
 }

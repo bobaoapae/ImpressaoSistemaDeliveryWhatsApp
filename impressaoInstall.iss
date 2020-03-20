@@ -30,7 +30,7 @@ LZMAUseSeparateProcess=yes
 LZMADictionarySize=1048576
 LZMANumFastBytes=273
 WizardStyle=modern
-SetupIconFile="D:\insync\java\ImpressaoSistemaDeliveryWhatsAppNew\zapia-logo.ico"
+SetupIconFile="C:\Users\jvbor\IdeaProjects\ImpressaoSistemaDeliveryWhatsAppNew\zapia-logo.ico"
 
 [Languages]
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
@@ -39,8 +39,9 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\insync\java\ImpressaoSistemaDeliveryWhatsAppNew\target\Delivery.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\insync\java\ImpressaoSistemaDeliveryWhatsAppNew\target\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\jvbor\IdeaProjects\ImpressaoSistemaDeliveryWhatsAppNew\target\Delivery.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\jvbor\IdeaProjects\ImpressaoSistemaDeliveryWhatsAppNew\target\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\jvbor\IdeaProjects\ImpressaoSistemaDeliveryWhatsAppNew\jre\*"; DestDir: "{app}\jre"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

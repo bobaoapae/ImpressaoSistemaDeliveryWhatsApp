@@ -55,8 +55,15 @@ public class Inicio extends JFrame {
             protocolService.setProtocolHandler("jar", new ProtocolHandlerJar());
             this.add(view);
         } catch (Exception ex) {
-            System.exit(0);
+            fecharPrograma();
         }
+    }
+
+    private void fecharPrograma() {
+        if (browser != null && !browser.isDisposed()) {
+            browser.dispose();
+        }
+        System.exit(0);
     }
 
     private void init() {
@@ -140,12 +147,12 @@ public class Inicio extends JFrame {
         Pedido pedido = null;
         try {
             pedido = eventosImpressao.pedido(UUID.fromString(uuid));
+            imprimirPedido(pedido);
         } catch (Throwable throwable) {
             JSFunction function = browser.executeJavaScriptAndReturnValue("sAlert").asFunction();
             function.invoke(null, "Ops!", "Ocorreu um erro ao buscar o pedido #" + pedido.getCod() + ", o suporte foi notificado!", "error");
             throwable.printStackTrace();
         }
-        imprimirPedido(pedido);
     }
 
     public void concluirPedido(String uuid, boolean aviso) {
@@ -295,7 +302,7 @@ public class Inicio extends JFrame {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                }, (String nome) -> {
+                }, this::imprimirPedido, (String nome) -> {
                     new Thread() {
                         public void run() {
                             trayImpressao.displayMenssage(nome + " está precisando de ajuda no WhatsApp");
@@ -330,7 +337,7 @@ public class Inicio extends JFrame {
                     String tokeen = ControleLogin.getInstance().getToken(usuario.getUsuario(), usuario.getSenha(), UUID.fromString(uuid));
                     if (tokeen.isEmpty()) {
                         JOptionPane.showMessageDialog(null, "Falha ao renovar os dados de acesso, inicie o sistema novamente.");
-                        System.exit(0);
+                        fecharPrograma();
                     } else {
                         eventosImpressao.setToken(tokeen);
                     }
@@ -341,7 +348,7 @@ public class Inicio extends JFrame {
                         String tokeen = ControleLogin.getInstance().getToken(usuario.getUsuario(), usuario.getSenha(), UUID.fromString(uuid));
                         if (tokeen.isEmpty()) {
                             JOptionPane.showMessageDialog(null, "Falha ao renovar os dados de acesso, inicie o sistema novamente.");
-                            System.exit(0);
+                            fecharPrograma();
                         } else {
                             eventosImpressao.setToken(tokeen);
                         }
@@ -384,7 +391,7 @@ public class Inicio extends JFrame {
         if (trayImpressao == null) {
             int result = JOptionPane.showConfirmDialog(null, "Deseja realmente sair do sistema?\nObs: Nenhum pedido será impresso se o sistema estiver fechado!", "Atenção!!", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
-                System.exit(0);
+                fecharPrograma();
             }
         } else {
             trayImpressao.displayMenssage("Ainda em Execução");
