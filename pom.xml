@@ -79,8 +79,12 @@
         <dependency>
             <groupId>br.com.zapia</groupId>
             <artifactId>JxBrowserCrack</artifactId>
-            <version>6.24.1</version>
+            <version>6.24.3</version>
             <exclusions>
+                <exclusion>
+                    <artifactId>jxbrowser-win64</artifactId>
+                    <groupId>com.teamdev.jxbrowser</groupId>
+                </exclusion>
                 <exclusion>
                     <artifactId>jxbrowser-linux64</artifactId>
                     <groupId>com.teamdev.jxbrowser</groupId>
